@@ -68,6 +68,8 @@ Aplikasi menggunakan dua widget:
 
 ## API Integration (MasjidNear)
 
+Aplikasi menggunakan API publik dari [masjidnear.me](https://api.masjidnear.me/v1/masjids/search):
+
 API yang digunakan **wajib menggunakan parameter**, jika tidak maka endpoint tidak memberikan hasil.
 
 ### Endpoint
@@ -115,31 +117,31 @@ https://api.masjidnear.me/v1/masjids/search?lat=-7.983908&lng=112.621391&rad=100
 ## Fitur Utama
 
 ### 1) Location Services
-
-* Mengambil lokasi GPS user
-* Handling permission (request/deny/permanently denied)
-* Menampilkan pesan error jika GPS mati atau permission ditolak
+- Mendapatkan lokasi GPS pengguna secara real-time
+- Permission handling untuk Android & iOS
+- Error handling ketika GPS tidak aktif atau permission denied
+- Distance calculation menggunakan Haversine formula
 
 ### 2) Interactive Map (OpenStreetMap)
+- OpenStreetMap dengan flutter_map
+- Tap untuk memilih lokasi manual
+- Markers untuk lokasi masjid yang ditemukan
+- Real-time location tracking
 
-* Map tiles dari OpenStreetMap melalui `flutter_map`
-* Marker untuk lokasi masjid
-* Dapat menampilkan lokasi user (opsional sesuai implementasi)
+### 3. Permission Handling
+- Runtime permission request untuk location access
+- Dialog prompts untuk enable GPS services
+- Fallback ke manual location selection
+- Settings navigation untuk permanently denied permissions
 
-### 3) State Management (Provider)
+### 4) State Management dengan Provider
+- Centralized state untuk masjid data
+- Loading states dan error handling
+- Automatic refresh functionality
+- Location caching
 
-* Menyimpan state:
-
-  * lokasi user
-  * radius pencarian
-  * list masjid
-  * loading & error state
-* UI update otomatis ketika data berubah
-
-### 4) UI Components
-
+### 5) UI Components
 * Card/Widget untuk menampilkan info masjid:
-
   * nama
   * alamat
   * jarak
@@ -152,37 +154,36 @@ https://api.masjidnear.me/v1/masjids/search?lat=-7.983908&lng=112.621391&rad=100
 
 * Flutter SDK >= 3.10.3
 * Dart SDK >= 3.10.3
-* Android Studio / Xcode
+* Android Studio / Xcode untuk mobile development
 
-### Steps
+### Installation Steps 
 
 1. Clone repo
-
 ```bash
 git clone <repository-url>
 cd masjidnear
 ```
 
 2. Install dependencies
-
 ```bash
 flutter pub get
 ```
 
-3. Jalankan aplikasi
+3. Generate app icons (jika ingin mengubah icon)
+```bash
+flutter pub run flutter_launcher_icons
+```
 
+4. Jalankan aplikasi
 ```bash
 flutter run
 ```
-
----
 
 ## Platform Configuration
 
 ### Android Permissions
 
-`android/app/src/main/AndroidManifest.xml`
-
+- Location permissions di `android/app/src/main/AndroidManifest.xml`
 ```xml
 <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
@@ -190,48 +191,102 @@ flutter run
 
 ### iOS Permissions
 
-`ios/Runner/Info.plist`
-
+- Location permissions di `ios/Runner/Info.plist`
 ```xml
 <key>NSLocationWhenInUseUsageDescription</key>
 <string>This app needs access to your location to find nearby mosques</string>
 ```
 
----
+## Database & Data Flow
 
-## Build / Deployment
+### Data Flow Architecture
+1. **MasjidProvider** mengelola state aplikasi
+2. **Geolocator** mendapatkan lokasi GPS user
+3. **MasjidService** memanggil API dengan parameter lokasi
+4. **API Response** di-parse menjadi list of Masjid objects
+5. **UI Updates** secara otomatis via Provider listener
+
+### State Management Pattern
+- Location state: loading, success, error
+- Masjid list state: loading, loaded, empty, error
+- Selected location state: GPS location atau manual selection
+- Distance calculation state: auto-update berdasarkan location
+
+## Error Handling
+
+### GPS Errors
+- Location services disabled → Show enable dialog
+- Permission denied → Request permission
+- Permission permanently denied → Navigate to settings
+- Location timeout → Show retry option
+
+### API Errors
+- Network timeout → Retry mechanism
+- Invalid response → Show error message
+- Empty results → Show no mosques found message
+- API rate limit → Implement caching
+
+## Performance Optimizations
+
+1. **Debouncing** untuk location updates
+2. **Lazy loading** untuk map tiles
+3. **Memory management** untuk markers
+4. **Background processing** untuk API calls
+5. **State persistence** untuk selected location
+
+## Testing Strategy
+
+### Unit Tests
+- Masjid model validation
+- Distance calculation accuracy
+- API response parsing
+
+### Integration Tests
+- Location service integration
+- API endpoint connectivity
+- State management flow
+
+### UI Tests
+- User interaction flows
+- Permission dialog handling
+- Map functionality testing
+
+## Deployment
 
 ### Android
-
 ```bash
 flutter build apk --release
 flutter build appbundle --release
 ```
 
 ### iOS
-
 ```bash
 flutter build ios --release
 ```
 
-### Web
-
+### Web (PWA)
 ```bash
 flutter build web --release
 ```
 
----
-
 ## Future Enhancements
 
-* Offline caching hasil masjid
-* Rute/directions ke masjid (Google Maps / OSRM)
-* Prayer times & detail masjid
-* Bookmark masjid favorit
-* Review & rating
+1. Offline caching untuk masjid data
+2. Directions integration dengan Google Maps
+3. Mosque details dengan prayer times
+4. User reviews dan ratings
+5. Bookmark favorite mosques
+6. Push notifications untuk nearby mosques
 
----
+## Contributing
+
+1. Fork repository
+2. Create feature branch
+3. Commit changes
+4. Push to branch
+5. Create Pull Request
 
 ## License
 
-MIT License
+This project is licensed under the MIT License.
+
