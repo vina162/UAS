@@ -235,7 +235,3 @@ flutter build web --release
 ## License
 
 MIT License
-
----
-
-Kalau kamu mau, aku bisa sekalian bikinin bagian **“Screenshot”** (tinggal kamu taruh gambar di folder `assets/images/` lalu aku tulis markdown-nya), dan aku bisa rapihin bagian **SplashScreen → pindah ke MasjidNearMainApp** biar alurnya jelas.
